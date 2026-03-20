@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/DependencyInjection.csproj" />
+  <Project Path="test/DependencyInjectionTest.csproj" />
+</Solution>
