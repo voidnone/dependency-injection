@@ -2,14 +2,18 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/> to enable attribute-based service registration.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Automatically register services from the provided assemblies.
+    /// Automatically registers services from the specified assemblies by scanning for
+    /// <see cref="LifetimeAttribute"/> decorated classes.
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="assemblies"></param>
-    /// <returns></returns>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <param name="assemblies">The assemblies to scan for services.</param>
+    /// <returns>The same service collection for chaining.</returns>
     public static IServiceCollection AddFromAssemblies(this IServiceCollection services, params Assembly[] assemblies)
     {
         ArgumentNullException.ThrowIfNull(services);

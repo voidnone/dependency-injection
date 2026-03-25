@@ -1,41 +1,87 @@
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace VoidNone.DependencyInjectionTest;
 
+/// <summary>
+/// Tests for <see cref="ServiceProviderExtensions"/>.
+/// </summary>
+#if NET8_0_OR_GREATER
 [TestClass]
 public class ServiceProviderExtensionsTest
 {
-    interface IService { }
+    private interface IService { }
 
     [Singleton<IService>]
-    class Service : IService { }
+    private class Service : IService { }
 
     [Singleton<IService>("key1")]
-    class Service1 : IService { }
+    private class KeyedService1 : IService { }
 
     [Singleton<IService>("key2")]
-    class Service2 : IService { }
-    
-    IServiceProvider _services = new ServiceCollection().AddFromAssemblies(Assembly.GetExecutingAssembly()).BuildServiceProvider();
+    private class KeyedService2 : IService { }
 
-    [TestMethod]
-    public void GetAllServiceTypes()
+    private static IServiceProvider CreateProvider()
     {
-        var types = _services.GetAllServiceTypes<IService>();
-        Assert.AreEqual(3, types.Count());
-        Assert.IsTrue(types.Contains(typeof(Service)));
-        Assert.IsTrue(types.Contains(typeof(Service1)));
-        Assert.IsTrue(types.Contains(typeof(Service2)));
+        return new ServiceCollection()
+            .AddFromAssemblies(typeof(ServiceProviderExtensionsTest).Assembly)
+            .BuildServiceProvider();
     }
 
     [TestMethod]
-    public void GetAllServices()
+    public void GetAllServiceTypes_ReturnsAllImplementations()
     {
-        var instances = _services.GetAllServices<IService>();
-        Assert.AreEqual(3, instances.Count());
-        Assert.IsTrue(instances.Any(a => a is Service));
-        Assert.IsTrue(instances.Any(a => a is Service1));
-        Assert.IsTrue(instances.Any(a => a is Service2));
+        var provider = CreateProvider();
+
+        var types = provider.GetAllServiceTypes<IService>();
+
+        Assert.HasCount(3, types);
+        Assert.IsTrue(types.Contains(typeof(Service)));
+        Assert.IsTrue(types.Contains(typeof(KeyedService1)));
+        Assert.IsTrue(types.Contains(typeof(KeyedService2)));
+    }
+
+    [TestMethod]
+    public void GetAllServiceTypes_GenericOverload_Works()
+    {
+        var provider = CreateProvider();
+
+        var types = provider.GetAllServiceTypes<IService>();
+
+        Assert.HasCount(3, types);
+    }
+
+    [TestMethod]
+    public void GetAllServices_ReturnsAllInstances()
+    {
+        var provider = CreateProvider();
+
+        var instances = provider.GetAllServices<IService>().ToList();
+
+        Assert.HasCount(3, instances);
+        Assert.IsInstanceOfType(instances.First(i => i is Service), typeof(Service));
+        Assert.IsInstanceOfType(instances.First(i => i is KeyedService1), typeof(KeyedService1));
+        Assert.IsInstanceOfType(instances.First(i => i is KeyedService2), typeof(KeyedService2));
+    }
+
+    [TestMethod]
+    public void GetAllServices_GenericOverload_ReturnsTypedInstances()
+    {
+        var provider = CreateProvider();
+
+        var instances = provider.GetAllServices<IService>();
+
+        Assert.HasCount(3, instances);
+    }
+
+    [TestMethod]
+    public void GetAllServices_SingletonInstances_AreSame()
+    {
+        var provider = CreateProvider();
+
+        var instances1 = provider.GetAllServices<IService>().ToList();
+        var instances2 = provider.GetAllServices<IService>().ToList();
+
+        Assert.AreSame(instances1[0], instances2[0]);
+        Assert.AreSame(instances1[1], instances2[1]);
+        Assert.AreSame(instances1[2], instances2[2]);
     }
 }
+#endif

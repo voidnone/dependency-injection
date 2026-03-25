@@ -1,84 +1,93 @@
 # VoidNone.DependencyInjection
 
-VoidNone.DependencyInjection is a lightweight .NET dependency injection extension library that supports automatic service registration via attributes. It simplifies the service registration process, improves development efficiency, and is suitable for various .NET application scenarios.
+A lightweight .NET dependency injection extension library that supports automatic service registration via attributes.
 
-## Install
+## Features
+
+- **Attribute-based registration**: Mark classes with `[Singleton]`, `[Scoped]`, or `[Transient]` attributes
+- **Interface support**: Register services with one or multiple interface types
+- **Keyed services**: Support for keyed service registration (requires .NET 8+)
+- **Generic attributes**: Convenient generic attribute syntax (requires .NET 8+)
+- **Multi-target**: Supports .NET 6.0, 7.0, 8.0, 9.0, and 10.0
+
+## Installation
 
 [![Nuget](https://img.shields.io/nuget/v/VoidNone.DependencyInjection?label=nuget&style=for-the-badge)](https://www.nuget.org/packages/VoidNone.DependencyInjection/)
 
-## Usage
+```bash
+dotnet add package VoidNone.DependencyInjection
+```
 
-### Service Definition
+## Quick Start
 
-Define a class as a service
+### 1. Mark your services
 
 ```csharp
-[Transient]
-class TransientService { }
-
 [Singleton]
-class SingletonService { }
+class DatabaseService { }
 
 [Scoped]
-class ScopedService { }
+class UserService { }
+
+[Transient]
+class LoggerService { }
 ```
 
-Using interfaces
+### 2. Register services
 
 ```csharp
+services.AddFromAssemblies(typeof(Service1).Assembly);
+```
+
+## Usage
+
+### Service Lifetime Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `[Singleton]` | Single instance for the lifetime of the application |
+| `[Scoped]` | One instance per request/scope |
+| `[Transient]` | New instance each time it's requested |
+
+### Registering with Interfaces
+
+```csharp
+interface IService { }
 interface IBaseService { }
 
-interface IService : IBaseService { }
-
 [Singleton<IService>]
-class Service1 : IService { }
+class MyService : IService { }
 
-// or
-
+// Register with multiple interfaces
 [Singleton<IService, IBaseService>]
-class Service2 : IService { }
-
-// or
-
-[Singleton(typeof(IService), typeof(IBaseService))]
-class Service3 : IService { }
+class MyService2 : IService, IBaseService { }
 ```
 
-Registering keyed services
+### Keyed Services (.NET 8+)
 
 ```csharp
-[Singleton<IService>("keyName")]
-class Service1 : IService { }
+[Singleton<IService>("primary")]
+class PrimaryService : IService { }
 
-// or
-
-[Singleton("keyName", typeof(IService))]
-class Service2 : IService { }
+[Singleton<IService>("backup")]
+class BackupService : IService { }
 ```
 
-### Registering Services
+### Extended Service Retrieval
 
 ```csharp
-// ServiceCollection
-services.AddFromAssemblies(typeof(Service1).Assembly)
+// Get all implementation types for a service
+Type[] types = services.GetAllServiceTypes<IService>();
+
+// Get all service instances (including keyed services) (.NET 8+)
+IEnumerable<object> instances = services.GetAllServices<IService>();
 ```
 
-### Extended Service Retrieval Methods
+## Requirements
 
-Retrieve all service types, including regular and keyed services
+- .NET 6.0 or later
+- Microsoft.Extensions.DependencyInjection.Abstractions
 
-```csharp
-services.GetAllServiceTypes();
-```
+## License
 
-Retrieve all service instances, including regular and keyed services
-
-```csharp
-services.GetAllServiceInstances();
-```
-
-Retrieve the ServiceProvider for the current HttpContext scope
-
-```csharp
-services.GetScopedServiceProvider();
-```
+MIT
