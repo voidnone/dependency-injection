@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -7,9 +5,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class ServiceProviderExtensions
 {
-    private static readonly ConcurrentDictionary<Type, IEnumerable<Type>> serviceTypes = [];
-    private static readonly ConcurrentDictionary<Type, object[]> serviceKeys = [];
-
     /// <summary>
     /// Gets all implementation types registered for the specified service type.
     /// </summary>
@@ -26,28 +21,30 @@ public static class ServiceProviderExtensions
     /// <returns>An array of implementation types registered for the service type.</returns>
     public static Type[] GetAllServiceTypes(this IServiceProvider serviceProvider, Type serviceType)
     {
-        IEnumerable<Type> GetAllServiceTypes(Type type)
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceType);
+
+        var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
+
+        return
+        [
+            .. serviceCollection
+                .Where(item => item.ServiceType == serviceType)
+                .Select(GetImplementationType)
+                .OfType<Type>()
+                .Distinct()
+        ];
+
+        static Type? GetImplementationType(ServiceDescriptor item)
         {
-            var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
-
-            foreach (var item in serviceCollection)
-            {
-                if (item.ServiceType != serviceType) continue;
 #if NET8_0_OR_GREATER
-                if (item.IsKeyedService && item.KeyedImplementationType != null)
-                {
-                    yield return item.KeyedImplementationType;
-                }
-                else
-#endif
-                    if (item.ImplementationType != null)
-                    {
-                        yield return item.ImplementationType;
-                    }
+            if (item.IsKeyedService)
+            {
+                return item.KeyedImplementationType;
             }
+#endif
+            return item.ImplementationType ?? item.ImplementationInstance?.GetType();
         }
-
-        return [.. serviceTypes.GetOrAdd(serviceType, GetAllServiceTypes)];
     }
 
 #if NET8_0_OR_GREATER
@@ -68,21 +65,15 @@ public static class ServiceProviderExtensions
     /// <returns>An enumerable of all service instances for the specified service type.</returns>
     public static IEnumerable<object> GetAllServices(this IServiceProvider serviceProvider, Type serviceType)
     {
-        var keys = serviceKeys.GetOrAdd(serviceType, type =>
-        {
-            var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
-            var keys = new HashSet<object>();
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceType);
 
-            foreach (var item in serviceCollection)
-            {
-                if (item.ServiceType != type) continue;
-                if (item.IsKeyedService && item.ServiceKey != null)
-                {
-                    keys.Add(item.ServiceKey);
-                }
-            }
-            return [.. keys];
-        });
+        var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
+        var keys = serviceCollection
+            .Where(item => item.ServiceType == serviceType && item.IsKeyedService)
+            .Select(item => item.ServiceKey)
+            .Distinct()
+            .ToArray();
 
         foreach (var item in serviceProvider.GetServices(serviceType))
         {

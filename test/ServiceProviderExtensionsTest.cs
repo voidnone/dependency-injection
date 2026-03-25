@@ -55,10 +55,10 @@ public class ServiceProviderExtensionsTest
 
         var instances = provider.GetAllServices<IService>().ToList();
 
-        Assert.AreEqual(3, instances.Count());
-        Assert.IsInstanceOfType(instances.First(i => i is Service), typeof(Service));
-        Assert.IsInstanceOfType(instances.First(i => i is KeyedService1), typeof(KeyedService1));
-        Assert.IsInstanceOfType(instances.First(i => i is KeyedService2), typeof(KeyedService2));
+        Assert.AreEqual(3, instances.Count);
+        Assert.IsInstanceOfType<Service>(instances.First(i => i is Service));
+        Assert.IsInstanceOfType<KeyedService1>(instances.First(i => i is KeyedService1));
+        Assert.IsInstanceOfType<KeyedService2>(instances.First(i => i is KeyedService2));
     }
 
     [TestMethod]

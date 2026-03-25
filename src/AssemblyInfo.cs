@@ -1,3 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("DependencyInjectionTest")]
+[assembly: InternalsVisibleTo("VoidNone.DependencyInjectionTest")]

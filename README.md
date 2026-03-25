@@ -8,7 +8,6 @@ A lightweight .NET dependency injection extension library that supports automati
 - **Interface support**: Register services with one or multiple interface types
 - **Keyed services**: Support for keyed service registration (requires .NET 8+)
 - **Generic attributes**: Convenient generic attribute syntax (requires .NET 8+)
-- **Multi-target**: Supports .NET 6.0, 7.0, 8.0, 9.0, and 10.0
 
 ## Installation
 
@@ -76,17 +75,16 @@ class BackupService : IService { }
 ### Extended Service Retrieval
 
 ```csharp
+var provider = services
+    .AddFromAssemblies(typeof(MyService).Assembly)
+    .BuildServiceProvider();
+
 // Get all implementation types for a service
-Type[] types = services.GetAllServiceTypes<IService>();
+Type[] types = provider.GetAllServiceTypes<IService>();
 
 // Get all service instances (including keyed services) (.NET 8+)
-IEnumerable<object> instances = services.GetAllServices<IService>();
+IEnumerable<IService> instances = provider.GetAllServices<IService>();
 ```
-
-## Requirements
-
-- .NET 6.0 or later
-- Microsoft.Extensions.DependencyInjection.Abstractions
 
 ## License
 
