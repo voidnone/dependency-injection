@@ -32,7 +32,7 @@ public class ServiceProviderExtensionsTest
 
         var types = provider.GetAllServiceTypes<IService>();
 
-        Assert.HasCount(3, types);
+        Assert.AreEqual(3, types.Length);
         Assert.IsTrue(types.Contains(typeof(Service)));
         Assert.IsTrue(types.Contains(typeof(KeyedService1)));
         Assert.IsTrue(types.Contains(typeof(KeyedService2)));
@@ -45,7 +45,7 @@ public class ServiceProviderExtensionsTest
 
         var types = provider.GetAllServiceTypes<IService>();
 
-        Assert.HasCount(3, types);
+        Assert.AreEqual(3, types.Length);
     }
 
     [TestMethod]
@@ -55,7 +55,7 @@ public class ServiceProviderExtensionsTest
 
         var instances = provider.GetAllServices<IService>().ToList();
 
-        Assert.HasCount(3, instances);
+        Assert.AreEqual(3, instances.Count());
         Assert.IsInstanceOfType(instances.First(i => i is Service), typeof(Service));
         Assert.IsInstanceOfType(instances.First(i => i is KeyedService1), typeof(KeyedService1));
         Assert.IsInstanceOfType(instances.First(i => i is KeyedService2), typeof(KeyedService2));
@@ -68,7 +68,7 @@ public class ServiceProviderExtensionsTest
 
         var instances = provider.GetAllServices<IService>();
 
-        Assert.HasCount(3, instances);
+        Assert.AreEqual(3, instances.Count());
     }
 
     [TestMethod]
