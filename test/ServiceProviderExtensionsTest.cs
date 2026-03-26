@@ -1,9 +1,9 @@
 namespace VoidNone.DependencyInjectionTest;
 
+#if NET8_0_OR_GREATER
 /// <summary>
 /// Tests for <see cref="ServiceProviderExtensions"/>.
 /// </summary>
-#if NET8_0_OR_GREATER
 [TestClass]
 public class ServiceProviderExtensionsTest
 {

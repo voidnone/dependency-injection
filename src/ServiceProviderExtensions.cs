@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
@@ -5,6 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class ServiceProviderExtensions
 {
+    private static readonly ConditionalWeakTable<IServiceCollection, ConcurrentDictionary<Type, Type[]>> implementationTypesCache = [];
+
     /// <summary>
     /// Gets all implementation types registered for the specified service type.
     /// </summary>
@@ -25,15 +30,16 @@ public static class ServiceProviderExtensions
         ArgumentNullException.ThrowIfNull(serviceType);
 
         var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
+        var cache = implementationTypesCache.GetOrCreateValue(serviceCollection);
 
-        return
+        return cache.GetOrAdd(serviceType, static (key, services) =>
         [
-            .. serviceCollection
-                .Where(item => item.ServiceType == serviceType)
+            .. services
+                .Where(item => item.ServiceType == key)
                 .Select(GetImplementationType)
                 .OfType<Type>()
                 .Distinct()
-        ];
+        ], serviceCollection);
 
         static Type? GetImplementationType(ServiceDescriptor item)
         {
@@ -48,6 +54,7 @@ public static class ServiceProviderExtensions
     }
 
 #if NET8_0_OR_GREATER
+    private static readonly ConditionalWeakTable<IServiceCollection, ConcurrentDictionary<Type, object?[]>> serviceKeysCache = [];
 
     /// <summary>
     /// Gets all service instances of type <typeparamref name="T"/>, including both regular and keyed services.
@@ -69,11 +76,13 @@ public static class ServiceProviderExtensions
         ArgumentNullException.ThrowIfNull(serviceType);
 
         var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
-        var keys = serviceCollection
-            .Where(item => item.ServiceType == serviceType && item.IsKeyedService)
-            .Select(item => item.ServiceKey)
-            .Distinct()
-            .ToArray();
+        var cache = serviceKeysCache.GetOrCreateValue(serviceCollection);
+        var keys = cache.GetOrAdd(serviceType, static (key, services) =>
+            [.. services
+                .Where(item => item.ServiceType == key && item.IsKeyedService)
+                .Select(item => item.ServiceKey)
+                .Distinct()
+            ], serviceCollection);
 
         foreach (var item in serviceProvider.GetServices(serviceType))
         {
