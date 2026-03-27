@@ -4,26 +4,30 @@ using System.Runtime.CompilerServices;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Extension methods for <see cref="IServiceProvider"/> to retrieve registered services.
+/// Provides helpers for inspecting and resolving services from an <see cref="IServiceProvider"/>.
 /// </summary>
 public static class ServiceProviderExtensions
 {
     private static readonly ConditionalWeakTable<IServiceCollection, ConcurrentDictionary<Type, Type[]>> implementationTypesCache = [];
 
     /// <summary>
-    /// Gets all implementation types registered for the specified service type.
+    /// Gets all distinct implementation types registered for the specified service type.
     /// </summary>
     /// <typeparam name="T">The service type to look up.</typeparam>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to retrieve services from.</param>
-    /// <returns>An array of implementation types registered for the service type.</returns>
+    /// <returns>An array of implementation types registered for <typeparamref name="T"/>.</returns>
     public static Type[] GetAllServiceTypes<T>(this IServiceProvider serviceProvider) => GetAllServiceTypes(serviceProvider, typeof(T));
 
     /// <summary>
-    /// Gets all implementation types registered for the specified service type.
+    /// Gets all distinct implementation types registered for the specified service type.
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to retrieve services from.</param>
     /// <param name="serviceType">The service type to look up.</param>
-    /// <returns>An array of implementation types registered for the service type.</returns>
+    /// <returns>An array of implementation types registered for <paramref name="serviceType"/>.</returns>
+    /// <remarks>
+    /// The provider must be able to resolve <see cref="IServiceCollection"/>. Registrations created through
+    /// <see cref="ServiceCollectionExtensions.AddFromAssemblies"/> satisfy this automatically.
+    /// </remarks>
     public static Type[] GetAllServiceTypes(this IServiceProvider serviceProvider, Type serviceType)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
@@ -57,19 +61,23 @@ public static class ServiceProviderExtensions
     private static readonly ConditionalWeakTable<IServiceCollection, ConcurrentDictionary<Type, object?[]>> serviceKeysCache = [];
 
     /// <summary>
-    /// Gets all service instances of type <typeparamref name="T"/>, including both regular and keyed services.
+    /// Gets all non-null service instances of type <typeparamref name="T"/>, including both regular and keyed services.
     /// </summary>
     /// <typeparam name="T">The service type to retrieve.</typeparam>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to retrieve services from.</param>
-    /// <returns>An enumerable of all service instances of type <typeparamref name="T"/>.</returns>
+    /// <returns>
+    /// An enumeration that yields unkeyed registrations first, followed by keyed registrations for every discovered key.
+    /// </returns>
     public static IEnumerable<T> GetAllServices<T>(this IServiceProvider serviceProvider) => GetAllServices(serviceProvider, typeof(T)).Select(s => (T)s);
 
     /// <summary>
-    /// Gets all service instances for the specified service type, including both regular and keyed services.
+    /// Gets all non-null service instances for the specified service type, including both regular and keyed services.
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> to retrieve services from.</param>
     /// <param name="serviceType">The service type to retrieve.</param>
-    /// <returns>An enumerable of all service instances for the specified service type.</returns>
+    /// <returns>
+    /// An enumeration that yields unkeyed registrations first, followed by keyed registrations for every discovered key.
+    /// </returns>
     public static IEnumerable<object> GetAllServices(this IServiceProvider serviceProvider, Type serviceType)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);

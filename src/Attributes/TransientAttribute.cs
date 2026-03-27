@@ -1,14 +1,16 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Marks a class as a transient service.
+/// Marks the attributed class for transient registration.
 /// </summary>
 public class TransientAttribute : LifetimeAttribute
 {
     /// <summary>
     /// Initializes a new instance of <see cref="TransientAttribute"/>.
     /// </summary>
-    /// <param name="services">The service types to register.</param>
+    /// <param name="services">
+    /// The service types to register. When empty, the attributed class is registered as itself.
+    /// </param>
     public TransientAttribute(params Type[] services) : base(ServiceLifetime.Transient, services)
     {
     }
@@ -17,19 +19,20 @@ public class TransientAttribute : LifetimeAttribute
     /// <summary>
     /// Initializes a new instance of <see cref="TransientAttribute"/> with a key.
     /// </summary>
-    /// <param name="key">The key for keyed service registration.</param>
-    /// <param name="services">The service types to register.</param>
+    /// <param name="key">The key to associate with the keyed transient registration.</param>
+    /// <param name="services">
+    /// The service types to register. When empty, the attributed class is registered as itself.
+    /// </param>
     public TransientAttribute(object? key, params Type[] services) : base(key, ServiceLifetime.Transient, services)
     {
     }
 #endif
-
 }
 
 #if NET8_0_OR_GREATER
 
 /// <summary>
-/// Marks a class as a transient service for <typeparamref name="TService"/>.
+/// Marks the attributed class for transient registration as <typeparamref name="TService"/>.
 /// </summary>
 /// <typeparam name="TService">The service type to register.</typeparam>
 public class TransientAttribute<TService> : TransientAttribute
@@ -51,7 +54,8 @@ public class TransientAttribute<TService> : TransientAttribute
 }
 
 /// <summary>
-/// Marks a class as a transient service for <typeparamref name="TService1"/> and <typeparamref name="TService2"/>.
+/// Marks the attributed class for transient registration as
+/// <typeparamref name="TService1"/> and <typeparamref name="TService2"/>.
 /// </summary>
 /// <typeparam name="TService1">The first service type to register.</typeparam>
 /// <typeparam name="TService2">The second service type to register.</typeparam>
@@ -74,7 +78,8 @@ public class TransientAttribute<TService1, TService2> : TransientAttribute
 }
 
 /// <summary>
-/// Marks a class as a transient service for <typeparamref name="TService1"/>, <typeparamref name="TService2"/>, and <typeparamref name="TService3"/>.
+/// Marks the attributed class for transient registration as
+/// <typeparamref name="TService1"/>, <typeparamref name="TService2"/>, and <typeparamref name="TService3"/>.
 /// </summary>
 /// <typeparam name="TService1">The first service type to register.</typeparam>
 /// <typeparam name="TService2">The second service type to register.</typeparam>

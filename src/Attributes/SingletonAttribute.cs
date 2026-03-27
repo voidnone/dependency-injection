@@ -1,14 +1,16 @@
 ﻿namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Marks a class as a singleton service.
+/// Marks the attributed class for singleton registration.
 /// </summary>
 public class SingletonAttribute : LifetimeAttribute
 {
     /// <summary>
     /// Initializes a new instance of <see cref="SingletonAttribute"/>.
     /// </summary>
-    /// <param name="services">The service types to register.</param>
+    /// <param name="services">
+    /// The service types to register. When empty, the attributed class is registered as itself.
+    /// </param>
     public SingletonAttribute(params Type[] services) : base(ServiceLifetime.Singleton, services)
     {
     }
@@ -17,19 +19,20 @@ public class SingletonAttribute : LifetimeAttribute
     /// <summary>
     /// Initializes a new instance of <see cref="SingletonAttribute"/> with a key.
     /// </summary>
-    /// <param name="key">The key for keyed service registration.</param>
-    /// <param name="services">The service types to register.</param>
+    /// <param name="key">The key to associate with the keyed singleton registration.</param>
+    /// <param name="services">
+    /// The service types to register. When empty, the attributed class is registered as itself.
+    /// </param>
     public SingletonAttribute(object? key, params Type[] services) : base(key, ServiceLifetime.Singleton, services)
     {
     }
 #endif
-
 }
 
 #if NET8_0_OR_GREATER
 
 /// <summary>
-/// Marks a class as a singleton service for <typeparamref name="TService"/>.
+/// Marks the attributed class for singleton registration as <typeparamref name="TService"/>.
 /// </summary>
 /// <typeparam name="TService">The service type to register.</typeparam>
 public class SingletonAttribute<TService> : SingletonAttribute
@@ -51,7 +54,8 @@ public class SingletonAttribute<TService> : SingletonAttribute
 }
 
 /// <summary>
-/// Marks a class as a singleton service for <typeparamref name="TService1"/> and <typeparamref name="TService2"/>.
+/// Marks the attributed class for singleton registration as
+/// <typeparamref name="TService1"/> and <typeparamref name="TService2"/>.
 /// </summary>
 /// <typeparam name="TService1">The first service type to register.</typeparam>
 /// <typeparam name="TService2">The second service type to register.</typeparam>
@@ -74,7 +78,8 @@ public class SingletonAttribute<TService1, TService2> : SingletonAttribute
 }
 
 /// <summary>
-/// Marks a class as a singleton service for <typeparamref name="TService1"/>, <typeparamref name="TService2"/>, and <typeparamref name="TService3"/>.
+/// Marks the attributed class for singleton registration as
+/// <typeparamref name="TService1"/>, <typeparamref name="TService2"/>, and <typeparamref name="TService3"/>.
 /// </summary>
 /// <typeparam name="TService1">The first service type to register.</typeparam>
 /// <typeparam name="TService2">The second service type to register.</typeparam>
@@ -98,4 +103,3 @@ public class SingletonAttribute<TService1, TService2, TService3> : SingletonAttr
 }
 
 #endif
-

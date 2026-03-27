@@ -3,17 +3,26 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Extension methods for <see cref="IServiceCollection"/> to enable attribute-based service registration.
+/// Provides attribute-based registration extensions for <see cref="IServiceCollection"/>.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Automatically registers services from the specified assemblies by scanning for
-    /// <see cref="LifetimeAttribute"/> decorated classes.
+    /// Scans the specified assemblies and registers every non-abstract class decorated with
+    /// one or more <see cref="LifetimeAttribute"/> instances.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
-    /// <param name="assemblies">The assemblies to scan for services.</param>
-    /// <returns>The same service collection for chaining.</returns>
+    /// <param name="assemblies">The assemblies to scan for attributed implementation types.</param>
+    /// <returns>The same <see cref="IServiceCollection"/> instance so calls can be chained.</returns>
+    /// <remarks>
+    /// <para>
+    /// When no explicit service types are supplied by an attribute, the implementation type is registered as self.
+    /// </para>
+    /// <para>
+    /// This method also registers the current <see cref="IServiceCollection"/> instance if it is not already present,
+    /// which allows <see cref="ServiceProviderExtensions"/> to inspect the final registration set later.
+    /// </para>
+    /// </remarks>
     public static IServiceCollection AddFromAssemblies(this IServiceCollection services, params Assembly[] assemblies)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -47,6 +56,7 @@ public static class ServiceCollectionExtensions
             var serviceTypes = group.SelectMany(s => s.Services).Distinct().ToArray();
 
             ValidateServiceTypes(type, serviceTypes);
+            // Register more specific service types first so the descriptor order stays deterministic.
             Array.Sort(serviceTypes, CompareServiceTypes);
 
             AddServices(services, type, group.Key.ServiceLifetime, group.Key.Key, serviceTypes);
@@ -84,6 +94,7 @@ public static class ServiceCollectionExtensions
         }
         catch (ReflectionTypeLoadException exception)
         {
+            // Keep partial discovery working when some types fail to load.
             return exception.Types.OfType<Type>();
         }
     }

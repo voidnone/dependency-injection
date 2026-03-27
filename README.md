@@ -79,6 +79,8 @@ var provider = services
     .AddFromAssemblies(typeof(MyService).Assembly)
     .BuildServiceProvider();
 
+// AddFromAssemblies registers the IServiceCollection itself so metadata helpers can inspect it later
+
 // Get all implementation types for a service
 Type[] types = provider.GetAllServiceTypes<IService>();
 
