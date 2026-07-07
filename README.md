@@ -38,7 +38,13 @@ class LoggerService { }
 services.AddFromAttributes();
 ```
 
-`AddFromAttributes` is generated at compile time for each consuming project. The generated method registers every attributed type found in the assemblies you pass in, which keeps the package AOT-friendly because it does not reflect over your types at runtime.
+`AddFromAttributes` is generated at compile time for each consuming project. The generated method registers attributed types discovered from the compilation graph, which keeps the package AOT-friendly because it does not reflect over your types at runtime.
+
+## AOT Support
+
+Supports trimming and NativeAOT.
+
+All registrations are source-generated at compile time, with no runtime assembly scanning or reflection-based discovery.
 
 ## Usage
 

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 namespace VoidNone.DependencyInjection.Generator;
 
 [Generator]
-public sealed class ServiceCollectionExtensionsGenerator : ISourceGenerator
+public sealed class ServiceCollectionExtensionsGenerator : IIncrementalGenerator
 {
     private static readonly DiagnosticDescriptor InvalidServiceType = new(
         id: "VNDI001",
@@ -21,18 +21,22 @@ public sealed class ServiceCollectionExtensionsGenerator : ISourceGenerator
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
         miscellaneousOptions: SymbolDisplayMiscellaneousOptions.None);
 
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        context.RegisterSourceOutput(context.CompilationProvider, static (sourceContext, compilation) =>
+        {
+            Execute(sourceContext, compilation);
+        });
     }
 
-    public void Execute(GeneratorExecutionContext context)
+    private static void Execute(SourceProductionContext context, Compilation compilation)
     {
-        if (string.Equals(context.Compilation.AssemblyName, "VoidNone.DependencyInjection", StringComparison.Ordinal))
+        if (string.Equals(compilation.AssemblyName, "VoidNone.DependencyInjection", StringComparison.Ordinal))
         {
             return;
         }
 
-        var lifetimeAttribute = context.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.LifetimeAttribute");
+        var lifetimeAttribute = compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.LifetimeAttribute");
         if (lifetimeAttribute is null)
         {
             return;
@@ -40,7 +44,7 @@ public sealed class ServiceCollectionExtensionsGenerator : ISourceGenerator
 
         var registrations = new List<Registration>();
 
-        foreach (var implementationType in GetAttributedTypes(context.Compilation.GlobalNamespace, lifetimeAttribute))
+        foreach (var implementationType in GetAttributedTypes(compilation.GlobalNamespace, lifetimeAttribute))
         {
             if (implementationType.TypeKind != TypeKind.Class || implementationType.IsAbstract)
             {
@@ -100,9 +104,9 @@ public sealed class ServiceCollectionExtensionsGenerator : ISourceGenerator
         builder.AppendLine();
         builder.AppendLine("namespace Microsoft.Extensions.DependencyInjection;");
         builder.AppendLine();
-        builder.AppendLine("public static class ServiceCollectionExtensions");
+        builder.AppendLine("internal static class ServiceCollectionExtensions");
         builder.AppendLine("{");
-        builder.AppendLine("    public static IServiceCollection AddFromAttributes(this IServiceCollection services)");
+        builder.AppendLine("    internal static IServiceCollection AddFromAttributes(this IServiceCollection services)");
         builder.AppendLine("    {");
         builder.AppendLine("        ArgumentNullException.ThrowIfNull(services);");
         if (registrations.Count > 0)

@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>VoidNone.DependencyInjection.Generator</AssemblyName>
-    <RootNamespace>VoidNone.DependencyInjection.Generator</RootNamespace>
+    <AssemblyName>VoidNone.$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>VoidNone.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>

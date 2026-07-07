@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -68,7 +69,32 @@ public static class ServiceProviderExtensions
     /// <returns>
     /// An enumeration that yields unkeyed registrations first, followed by keyed registrations for every discovered key.
     /// </returns>
-    public static IEnumerable<T> GetAllServices<T>(this IServiceProvider serviceProvider) => GetAllServices(serviceProvider, typeof(T)).Select(s => (T)s);
+    public static IEnumerable<T> GetAllServices<T>(this IServiceProvider serviceProvider)
+    {
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+
+        var serviceCollection = serviceProvider.GetRequiredService<IServiceCollection>();
+        var cache = serviceKeysCache.GetOrCreateValue(serviceCollection);
+        var keys = cache.GetOrAdd(typeof(T), static (key, services) =>
+            [.. services
+                .Where(item => item.ServiceType == key && item.IsKeyedService)
+                .Select(item => item.ServiceKey)
+                .Distinct()
+            ], serviceCollection);
+
+        foreach (var item in serviceProvider.GetServices<T>())
+        {
+            yield return item;
+        }
+
+        foreach (var key in keys)
+        {
+            foreach (var item in serviceProvider.GetKeyedServices<T>(key))
+            {
+                yield return item;
+            }
+        }
+    }
 
     /// <summary>
     /// Gets all non-null service instances for the specified service type, including both regular and keyed services.
@@ -78,6 +104,7 @@ public static class ServiceProviderExtensions
     /// <returns>
     /// An enumeration that yields unkeyed registrations first, followed by keyed registrations for every discovered key.
     /// </returns>
+    [RequiresDynamicCode("Resolving services by runtime Type requires dynamic code generation support in Microsoft.Extensions.DependencyInjection.")]
     public static IEnumerable<object> GetAllServices(this IServiceProvider serviceProvider, Type serviceType)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
