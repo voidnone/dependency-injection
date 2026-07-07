@@ -2,10 +2,11 @@
 	<Import Project="../../common.props" />
 
 	<PropertyGroup>
-		<Version>5.0.1</Version>
+		<Version>5.0.2</Version>
 		<IsAotCompatible>true</IsAotCompatible>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
