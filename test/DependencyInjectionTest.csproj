@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../src/DependencyInjection.csproj" />
+    <ProjectReference Include="../src/DependencyInjection/DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../src/DependencyInjection.Generator/DependencyInjection.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>

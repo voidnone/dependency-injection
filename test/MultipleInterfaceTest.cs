@@ -8,22 +8,22 @@ namespace VoidNone.DependencyInjectionTest;
 public class MultipleInterfaceTest
 {
     [Transient(typeof(IService), typeof(IService2))]
-    private class Service : IService, IService2 { }
+    internal class Service : IService, IService2 { }
 
     [Singleton<IService3>, Transient<IService4, IService5, IService6>]
-    private class MultiAttributeService : IService3, IService4, IService5, IService6 { }
+    internal class MultiAttributeService : IService3, IService4, IService5, IService6 { }
 
-    private interface IService { }
-    private interface IService2 { }
-    private interface IService3 { }
-    private interface IService4 { }
-    private interface IService5 { }
-    private interface IService6 { }
+    internal interface IService { }
+    internal interface IService2 { }
+    internal interface IService3 { }
+    internal interface IService4 { }
+    internal interface IService5 { }
+    internal interface IService6 { }
 
     private static IServiceProvider CreateProvider()
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(MultipleInterfaceTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 

@@ -1,4 +1,5 @@
 <Solution>
-  <Project Path="src/DependencyInjection.csproj" />
+  <Project Path="src/DependencyInjection/DependencyInjection.csproj" />
+  <Project Path="src/DependencyInjection.Generator/DependencyInjection.Generator.csproj" />
   <Project Path="test/DependencyInjectionTest.csproj" />
 </Solution>

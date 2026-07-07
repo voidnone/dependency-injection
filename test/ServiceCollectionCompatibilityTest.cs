@@ -6,22 +6,22 @@ namespace VoidNone.DependencyInjectionTest;
 [TestClass]
 public class ServiceCollectionCompatibilityTest
 {
-    private interface IService { }
+    internal interface IService { }
 
-    private interface IBaseService { }
+    internal interface IBaseService { }
 
-    private interface IDerivedService : IBaseService { }
+    internal interface IDerivedService : IBaseService { }
 
     [Singleton(typeof(IService))]
-    private class InterfaceService : IService { }
+    internal class InterfaceService : IService { }
 
     [Transient(typeof(IDerivedService), typeof(IBaseService))]
-    private class HierarchyService : IDerivedService { }
+    internal class HierarchyService : IDerivedService { }
 
     private static IServiceProvider CreateProvider()
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(ServiceCollectionCompatibilityTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 

@@ -26,7 +26,7 @@ public static class ServiceProviderExtensions
     /// <returns>An array of implementation types registered for <paramref name="serviceType"/>.</returns>
     /// <remarks>
     /// The provider must be able to resolve <see cref="IServiceCollection"/>. Registrations created through
-    /// <see cref="ServiceCollectionExtensions.AddFromAssemblies"/> satisfy this automatically.
+    /// The generated <c>AddFromAttributes</c> registration path satisfies this automatically.
     /// </remarks>
     public static Type[] GetAllServiceTypes(this IServiceProvider serviceProvider, Type serviceType)
     {

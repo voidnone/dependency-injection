@@ -7,21 +7,21 @@ namespace VoidNone.DependencyInjectionTest;
 [TestClass]
 public class ServiceProviderExtensionsTest
 {
-    private interface IService { }
+    internal interface IService { }
 
     [Singleton<IService>]
-    private class Service : IService { }
+    internal class Service : IService { }
 
     [Singleton<IService>("key1")]
-    private class KeyedService1 : IService { }
+    internal class KeyedService1 : IService { }
 
     [Singleton<IService>("key2")]
-    private class KeyedService2 : IService { }
+    internal class KeyedService2 : IService { }
 
     private static IServiceProvider CreateProvider()
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(ServiceProviderExtensionsTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 

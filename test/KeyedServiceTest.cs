@@ -8,13 +8,13 @@ namespace VoidNone.DependencyInjectionTest;
 public class KeyedServiceTest
 {
     [Singleton("key1")]
-    private class KeyedSingletonService { }
+    internal class KeyedSingletonService { }
 
     [Scoped("key2")]
-    private class KeyedScopedService { }
+    internal class KeyedScopedService { }
 
     [Transient("key3")]
-    private class KeyedTransientService { }
+    internal class KeyedTransientService { }
 
     [TestMethod]
     public void KeyedSingleton_CreatesSameInstance()
@@ -79,7 +79,7 @@ public class KeyedServiceTest
     private static IServiceProvider CreateProvider()
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(KeyedServiceTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 }

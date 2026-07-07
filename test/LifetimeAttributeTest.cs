@@ -7,27 +7,27 @@ namespace VoidNone.DependencyInjectionTest;
 public class LifetimeAttributeTest
 {
     [Singleton]
-    private class SingletonService { }
+    internal class SingletonService { }
 
     [Scoped]
-    private class ScopedService { }
+    internal class ScopedService { }
 
     [Transient]
-    private class TransientService { }
+    internal class TransientService { }
 
     [Lifetime(ServiceLifetime.Singleton)]
-    private class LifetimeSingletonService { }
+    internal class LifetimeSingletonService { }
 
     [Lifetime(ServiceLifetime.Scoped)]
-    private class LifetimeScopedService { }
+    internal class LifetimeScopedService { }
 
     [Lifetime(ServiceLifetime.Transient)]
-    private class LifetimeTransientService { }
+    internal class LifetimeTransientService { }
 
     private static IServiceProvider CreateServiceProvider(params Type[] types)
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(LifetimeAttributeTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 

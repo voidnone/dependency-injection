@@ -35,8 +35,10 @@ class LoggerService { }
 ### 2. Register services
 
 ```csharp
-services.AddFromAssemblies(typeof(Service1).Assembly);
+services.AddFromAttributes();
 ```
+
+`AddFromAttributes` is generated at compile time for each consuming project. The generated method registers every attributed type found in the assemblies you pass in, which keeps the package AOT-friendly because it does not reflect over your types at runtime.
 
 ## Usage
 
@@ -76,10 +78,10 @@ class BackupService : IService { }
 
 ```csharp
 var provider = services
-    .AddFromAssemblies(typeof(MyService).Assembly)
+    .AddFromAttributes()
     .BuildServiceProvider();
 
-// AddFromAssemblies registers the IServiceCollection itself so metadata helpers can inspect it later
+// AddFromAttributes registers the IServiceCollection itself so metadata helpers can inspect it later
 
 // Get all implementation types for a service
 Type[] types = provider.GetAllServiceTypes<IService>();

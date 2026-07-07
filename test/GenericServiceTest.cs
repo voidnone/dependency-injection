@@ -7,19 +7,19 @@ namespace VoidNone.DependencyInjectionTest;
 public class GenericServiceTest
 {
     [Transient(typeof(IService<>))]
-    private class Service<T> : IService<T> { }
+    internal class Service<T> : IService<T> { }
 
-    private interface IService<T> { }
+    internal interface IService<T> { }
 
-    private interface IMyService : IService<DateTime> { }
+    internal interface IMyService : IService<DateTime> { }
 
     [Transient(typeof(IMyService))]
-    private class MyService : Service<DateTime>, IMyService { }
+    internal class MyService : Service<DateTime>, IMyService { }
 
     private static IServiceProvider CreateProvider()
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(GenericServiceTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 

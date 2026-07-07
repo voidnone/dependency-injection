@@ -7,11 +7,11 @@ namespace VoidNone.DependencyInjectionTest;
 [TestClass]
 public class ServiceProviderIsolationTest
 {
-    private interface IService { }
+    internal interface IService { }
 
-    private class ProviderOneService : IService { }
+    internal class ProviderOneService : IService { }
 
-    private class ProviderTwoService : IService { }
+    internal class ProviderTwoService : IService { }
 
     private static IServiceProvider CreateProvider<TImplementation>()
         where TImplementation : class, IService

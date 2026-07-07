@@ -7,18 +7,18 @@ namespace VoidNone.DependencyInjectionTest;
 public class InheritanceTest
 {
     [Transient(typeof(IBaseService))]
-    private class Service : BaseService, IService { }
+    internal class Service : BaseService, IService { }
 
     [Transient]
-    private class BaseService { }
+    internal class BaseService { }
 
-    private interface IService : IBaseService { }
-    private interface IBaseService { }
+    internal interface IService : IBaseService { }
+    internal interface IBaseService { }
 
     private static IServiceProvider CreateProvider()
     {
         return new ServiceCollection()
-            .AddFromAssemblies(typeof(InheritanceTest).Assembly)
+            .AddFromAttributes()
             .BuildServiceProvider();
     }
 
