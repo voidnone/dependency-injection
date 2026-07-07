@@ -1,4 +1,4 @@
-namespace VoidNone.DependencyInjectionTest;
+namespace VoidNone.DependencyInjection.Tests;
 
 /// <summary>
 /// Tests for generic service registration.

@@ -1,4 +1,4 @@
-namespace VoidNone.DependencyInjectionTest;
+namespace VoidNone.DependencyInjection.Tests;
 
 #if NET8_0_OR_GREATER
 /// <summary>

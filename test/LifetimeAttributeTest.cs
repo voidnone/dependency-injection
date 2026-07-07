@@ -1,4 +1,4 @@
-namespace VoidNone.DependencyInjectionTest;
+namespace VoidNone.DependencyInjection.Tests;
 
 /// <summary>
 /// Tests for <see cref="SingletonAttribute"/>, <see cref="ScopedAttribute"/>, and <see cref="TransientAttribute"/>.

@@ -1,4 +1,4 @@
-namespace VoidNone.DependencyInjectionTest;
+namespace VoidNone.DependencyInjection.Tests;
 
 /// <summary>
 /// Tests registration paths that must work across all supported target frameworks.
