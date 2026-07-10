@@ -23,13 +23,13 @@
 
 	<ItemGroup>
 		<ProjectReference
-			Include="../DependencyInjection.Generator/DependencyInjection.Generator.csproj"
+			Include="../DependencyInjection.SourceGeneration/DependencyInjection.SourceGeneration.csproj"
 			OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None
-			Include="../DependencyInjection.Generator/bin/$(Configuration)/netstandard2.0/VoidNone.DependencyInjection.Generator.dll"
+			Include="../DependencyInjection.SourceGeneration/bin/$(Configuration)/netstandard2.0/VoidNone.DependencyInjection.SourceGeneration.dll"
 			Pack="true"
 			PackagePath="analyzers/dotnet/cs"
 			Visible="false" />

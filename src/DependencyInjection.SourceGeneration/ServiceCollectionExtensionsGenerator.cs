@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-namespace VoidNone.DependencyInjection.Generator;
+namespace VoidNone.DependencyInjection.SourceGeneration;
 
 [Generator]
 public sealed class ServiceCollectionExtensionsGenerator : IIncrementalGenerator
